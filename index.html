@@ -1,24 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="stylesheet" href="./index.css">
 </head>
+
 <body>
     <main class="principal">
-        <section class="secaoEntrada">
-            <h1 class="titulo"></h1>
-            <p class="textoDescricao"></p>
-            <button class="botaoIniciar"></button>
+        <section class="secaoEntrada" style="display: none;">
+            <h1 class="titulo">Bem vindo ao jogo, flappyFrog</h1>
+            <p class="textoDescricao">Como jogar:</p>
+            <ul class="listaInstrucoes">
+                <li class="itemInstrucao">Movimente a mão para esquerda para pular para a esquerda.</li>
+                <li class="itemInstrucao">Movimente a mão para direita para pular para a direita.</li>
+                <li class="itemInstrucao">Movimente o corpo para a esquerda para se mover à esquerda.</li>
+                <li class="itemInstrucao">Movimente o corpo para a direita para se mover à direita.</li>
+            </ul>
+            <button class="botaoIniciar">Iniciar Jogo</button>
         </section>
         <section class="secaoJogo">
-            <div class="campoJogo"></div>
+            <div class="campoJogo">
+                <img src="./Imagens/Vector/Personagem/frog_idle.svg" alt="" class="imagemPersonagem" id="personagem">
+                <div class="fundoJogo">
+                </div>
+            </div>
+            <div class="statusJogo">
+                <div class="vidas">
+                    <p class="textoVidas">Vidas:</p>
+                    <div class="coracoes">
+                        <img src="./Imagens/Vector/Itens/hud_heart.svg" alt="" class="imagemCoracao" id="coracao1">
+                        <img src="./Imagens/Vector/Itens/hud_heart.svg" alt="" class="imagemCoracao" id="coracao2">
+                        <img src="./Imagens/Vector/Itens/hud_heart.svg" alt="" class="imagemCoracao" id="coracao3">
+                    </div>
+                </div>
+                <button class="botaoReset">Jogar Novamente?</button>
+            </div>
         </section>
-        <div class="statusJogo">
-            <div class="vidas"></div>
-            <button class="botaoReset"></button>
-        </div>
     </main>
+
+    <script src="./index.js"></script>
+
 </body>
 </html>
