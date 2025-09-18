@@ -92,6 +92,7 @@ function iniciarJogo() {
     requestAnimationFrame(gameLoop);
 }
 
+
 function gameLoop() {
     if (isGameOver) {
         fimDeJogo();
@@ -100,14 +101,23 @@ function gameLoop() {
     aplicarGravidade();
     moverPersonagem();
     verificarColisoes();
+
+    // Lógica da "Câmera" que segue o personagem
     if (personagemBottom > ALTURA_CAMPO / 2) {
-        let scrollSpeed = velocidadeVertical;
+        let scrollSpeed = velocidadeVertical; // Velocidade que o cenário vai descer
+
+        // Move todas as plataformas para baixo
         plataformas.forEach(plataforma => {
             plataforma.bottom -= scrollSpeed;
             plataforma.visual.style.bottom = plataforma.bottom + 'px';
         });
 
-        // **CORREÇÃO**: Gerar plataformas de forma mais inteligente
+        // ===== A CORREÇÃO ESTÁ AQUI =====
+        // Anula a subida do personagem na tela para que a câmera o acompanhe
+        personagemBottom -= scrollSpeed;
+        // ================================
+
+        // Lógica para gerar novas plataformas quando as antigas saem da tela
         let plataformaMaisBaixa = plataformas[0];
         if (plataformaMaisBaixa.bottom < -20) {
             plataformas.shift();
@@ -115,13 +125,14 @@ function gameLoop() {
             score += 10;
             scoreDisplay.innerHTML = `Pontos: ${score}`;
             
-            // Pega a última plataforma (a mais alta) para basear a posição da nova
             let ultimaPlataforma = plataformas[plataformas.length - 1];
             let novaPlataforma = new Plataforma(ultimaPlataforma.bottom + (ALTURA_CAMPO / QTD_PLATAFORMAS));
             plataformas.push(novaPlataforma);
         }
     }
-    if (personagemBottom < -60) { // Damos uma margem maior para a morte
+
+    // Condição de fim de jogo
+    if (personagemBottom < -60) {
         isGameOver = true;
     }
     requestAnimationFrame(gameLoop);
