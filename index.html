@@ -1,46 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Flappy Frog - Jogo com Gestos</title>
     <link rel="stylesheet" href="./index.css">
 </head>
 
 <body>
     <main class="principal">
-        <section class="secaoEntrada" style="display: none;">
-            <h1 class="titulo">Bem vindo ao jogo, flappyFrog</h1>
-            <p class="textoDescricao">Como jogar:</p>
+        <section class="secaoEntrada" id="telaInicial">
+            <h1 class="titulo">Bem-vindo ao Flappy Frog!</h1>
+            <p class="textoDescricao">Controle o sapo com os gestos da sua mão!</p>
             <ul class="listaInstrucoes">
-                <li class="itemInstrucao">Movimente a mão para esquerda para pular para a esquerda.</li>
-                <li class="itemInstrucao">Movimente a mão para direita para pular para a direita.</li>
-                <li class="itemInstrucao">Movimente o corpo para a esquerda para se mover à esquerda.</li>
-                <li class="itemInstrucao">Movimente o corpo para a direita para se mover à direita.</li>
+                <li class="itemInstrucao">Mão para a esquerda para pular para a esquerda.</li>
+                <li class="itemInstrucao">Mão para a direita para pular para a direita.</li>
             </ul>
-            <button class="botaoIniciar">Iniciar Jogo</button>
+            <button class="botaoIniciar" id="botaoIniciar">Iniciar Jogo</button>
+            <p class="textoPequeno">Por favor, permita o acesso à câmera.</p>
         </section>
-        <section class="secaoJogo">
-            <div class="campoJogo">
-                <img src="./Imagens/Vector/Personagem/frog_idle.svg" alt="" class="imagemPersonagem" id="personagem">
-                <div class="fundoJogo">
+
+        <section class="secaoJogo" id="secaoJogo" style="display: none;">
+            <div id="score">Pontos: 0</div>
+            <div class="campoJogo" id="campoJogo">
+                <img src="https://i.imgur.com/BI2s207.png" alt="Personagem Sapo" class="imagemPersonagem" id="personagem">
                 </div>
-            </div>
-            <div class="statusJogo">
-                <div class="vidas">
-                    <p class="textoVidas">Vidas:</p>
-                    <div class="coracoes">
-                        <img src="./Imagens/Vector/Itens/hud_heart.svg" alt="" class="imagemCoracao" id="coracao1">
-                        <img src="./Imagens/Vector/Itens/hud_heart.svg" alt="" class="imagemCoracao" id="coracao2">
-                        <img src="./Imagens/Vector/Itens/hud_heart.svg" alt="" class="imagemCoracao" id="coracao3">
-                    </div>
-                </div>
-                <button class="botaoReset">Jogar Novamente?</button>
-            </div>
+            <div id="webcam-container"></div>
         </section>
+
+        <section class="secaoEntrada" id="telaFimDeJogo" style="display: none;">
+             <h1 class="titulo">Fim de Jogo!</h1>
+             <p class="textoDescricao" id="pontuacaoFinal"></p>
+             <button class="botaoIniciar" id="botaoReset">Jogar Novamente</button>
+        </section>
+
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
     <script src="./index.js"></script>
 
 </body>
