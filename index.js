@@ -103,33 +103,31 @@ function gameLoop() {
     verificarColisoes();
 
     // Lógica da "Câmera" que segue o personagem
-    if (personagemBottom > ALTURA_CAMPO / 2) {
-        let scrollSpeed = velocidadeVertical; // Velocidade que o cenário vai descer
+    if (personagemBottom > ALTURA_CAMPO / 2 && velocidadeVertical > 0) { // <--- A MUDANÇA É AQUI
+    let scrollSpeed = velocidadeVertical; 
 
-        // Move todas as plataformas para baixo
-        plataformas.forEach(plataforma => {
-            plataforma.bottom -= scrollSpeed;
-            plataforma.visual.style.bottom = plataforma.bottom + 'px';
-        });
+    // Move todas as plataformas para baixo
+    plataformas.forEach(plataforma => {
+        plataforma.bottom -= scrollSpeed;
+        plataforma.visual.style.bottom = plataforma.bottom + 'px';
+    });
 
-        // ===== A CORREÇÃO ESTÁ AQUI =====
-        // Anula a subida do personagem na tela para que a câmera o acompanhe
-        personagemBottom -= scrollSpeed;
-        // ================================
+    // Anula a subida do personagem na tela para que a câmera o acompanhe
+    personagemBottom -= scrollSpeed;
 
-        // Lógica para gerar novas plataformas quando as antigas saem da tela
-        let plataformaMaisBaixa = plataformas[0];
-        if (plataformaMaisBaixa.bottom < -20) {
-            plataformas.shift();
-            campoJogo.removeChild(plataformaMaisBaixa.visual);
-            score += 10;
-            scoreDisplay.innerHTML = `Pontos: ${score}`;
-            
-            let ultimaPlataforma = plataformas[plataformas.length - 1];
-            let novaPlataforma = new Plataforma(ultimaPlataforma.bottom + (ALTURA_CAMPO / QTD_PLATAFORMAS));
-            plataformas.push(novaPlataforma);
-        }
+    // Lógica para gerar novas plataformas...
+    let plataformaMaisBaixa = plataformas[0];
+    if (plataformaMaisBaixa.bottom < -20) {
+        plataformas.shift();
+        campoJogo.removeChild(plataformaMaisBaixa.visual);
+        score += 10;
+        scoreDisplay.innerHTML = `Pontos: ${score}`;
+        
+        let ultimaPlataforma = plataformas[plataformas.length - 1];
+        let novaPlataforma = new Plataforma(ultimaPlataforma.bottom + (ALTURA_CAMPO / QTD_PLATAFORMAS));
+        plataformas.push(novaPlataforma);
     }
+}
 
     // Condição de fim de jogo
     if (personagemBottom < -60) {
