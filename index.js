@@ -27,7 +27,7 @@ const FORCA_PULO = 18;
 const VELOCIDADE_MOVIMENTO = 5;
 
 // --- CONFIGURAÇÕES DO TEACHABLE MACHINE ---
-const URL = "https://teachablemachine.withgoogle.com/models/0N1eNo-gc/"; // <-- ATENÇÃO: COLOQUE SEU LINK AQUI!
+const URL = "https://teachablemachine.withgoogle.com/models/0N1eNo-gc/"; // Seu link do Teachable Machine
 let model, webcam, maxPredictions;
 
 
@@ -39,54 +39,44 @@ botaoIniciar.addEventListener('click', () => {
 });
 
 botaoReset.addEventListener('click', () => {
-    location.reload(); // Simplesmente recarrega a página para reiniciar
+    location.reload(); 
 });
 
-// Inicializa o modelo do Teachable Machine e a webcam
 async function initTeachableMachine() {
     const modelURL = URL + "model.json";
     const metadataURL = URL + "metadata.json";
-
     model = await tmImage.load(modelURL, metadataURL);
     maxPredictions = model.getTotalClasses();
-
-    const flip = true; // Espelha a câmera
+    const flip = true;
     webcam = new tmImage.Webcam(200, 200, flip);
     await webcam.setup();
     await webcam.play();
     window.requestAnimationFrame(loop);
-
     document.getElementById("webcam-container").appendChild(webcam.canvas);
 }
 
-// Loop de predição do Teachable Machine
 async function loop() {
     webcam.update();
     await predict();
     window.requestAnimationFrame(loop);
 }
 
-// Realiza a predição com base na imagem da webcam
 async function predict() {
     if (isGameOver) return;
     const prediction = await model.predict(webcam.canvas);
-    
     let maiorProbabilidade = 0;
     let classePredominante = '';
-
     for (let i = 0; i < maxPredictions; i++) {
-        if(prediction[i].probability.toFixed(2) > maiorProbabilidade) {
+        if (prediction[i].probability.toFixed(2) > maiorProbabilidade) {
             maiorProbabilidade = prediction[i].probability.toFixed(2);
             classePredominante = prediction[i].className;
         }
     }
-    
-    // Controla o personagem com base na predição
     if (classePredominante === "Direita") {
         moverDireita();
     } else if (classePredominante === "Esquerda") {
         moverEsquerda();
-    } else { // Neutro
+    } else {
         pararMovimentoHorizontal();
     }
 }
@@ -97,11 +87,9 @@ function iniciarJogo() {
     isGameOver = false;
     score = 0;
     scoreDisplay.innerHTML = `Pontos: ${score}`;
-    initTeachableMachine(); // Inicia a câmera e o modelo
+    initTeachableMachine();
     criarPlataformas();
-    personagem.style.bottom = personagemBottom + 'px';
-    personagem.style.left = personagemLeft + 'px';
-    requestAnimationFrame(gameLoop); // Inicia o loop do jogo
+    requestAnimationFrame(gameLoop);
 }
 
 function gameLoop() {
@@ -109,54 +97,50 @@ function gameLoop() {
         fimDeJogo();
         return;
     }
-
     aplicarGravidade();
     moverPersonagem();
     verificarColisoes();
-    
-    // Movimenta as plataformas para baixo se o personagem subir
     if (personagemBottom > ALTURA_CAMPO / 2) {
-        personagemBottom = ALTURA_CAMPO / 2; // Mantém o personagem no meio da tela
+        let scrollSpeed = velocidadeVertical;
         plataformas.forEach(plataforma => {
-            plataforma.bottom -= velocidadeVertical;
+            plataforma.bottom -= scrollSpeed;
             plataforma.visual.style.bottom = plataforma.bottom + 'px';
-            if (plataforma.bottom < -20) {
-                // Remove a plataforma que saiu da tela e cria uma nova no topo
-                plataformas.shift();
-                campoJogo.removeChild(plataforma.visual);
-                score += 10;
-                scoreDisplay.innerHTML = `Pontos: ${score}`;
-                
-                let novaPlataforma = new Plataforma(ALTURA_CAMPO - 20);
-                plataformas.push(novaPlataforma);
-            }
         });
-    }
 
-    // Condição de fim de jogo
-    if (personagemBottom < 0) {
+        // **CORREÇÃO**: Gerar plataformas de forma mais inteligente
+        let plataformaMaisBaixa = plataformas[0];
+        if (plataformaMaisBaixa.bottom < -20) {
+            plataformas.shift();
+            campoJogo.removeChild(plataformaMaisBaixa.visual);
+            score += 10;
+            scoreDisplay.innerHTML = `Pontos: ${score}`;
+            
+            // Pega a última plataforma (a mais alta) para basear a posição da nova
+            let ultimaPlataforma = plataformas[plataformas.length - 1];
+            let novaPlataforma = new Plataforma(ultimaPlataforma.bottom + (ALTURA_CAMPO / QTD_PLATAFORMAS));
+            plataformas.push(novaPlataforma);
+        }
+    }
+    if (personagemBottom < -60) { // Damos uma margem maior para a morte
         isGameOver = true;
     }
-
     requestAnimationFrame(gameLoop);
 }
 
 function aplicarGravidade() {
-    personagemBottom -= velocidadeVertical;
+    personagemBottom += velocidadeVertical;
     velocidadeVertical -= GRAVIDADE;
+    personagem.style.bottom = personagemBottom + 'px';
 }
 
 function moverPersonagem() {
     personagemLeft += velocidadeHorizontal;
-    // Impede o personagem de sair pelas laterais
     if (personagemLeft > LARGURA_CAMPO - 60) {
         personagemLeft = LARGURA_CAMPO - 60;
     }
     if (personagemLeft < 0) {
         personagemLeft = 0;
     }
-
-    personagem.style.bottom = personagemBottom + 'px';
     personagem.style.left = personagemLeft + 'px';
 }
 
@@ -164,7 +148,6 @@ function pular() {
     velocidadeVertical = FORCA_PULO;
 }
 
-// --- CONTROLES VINDOS DO TEACHABLE MACHINE ---
 function moverDireita() {
     velocidadeHorizontal = VELOCIDADE_MOVIMENTO;
 }
@@ -180,9 +163,17 @@ function pararMovimentoHorizontal() {
 class Plataforma {
     constructor(novaPlataformaBottom) {
         this.bottom = novaPlataformaBottom;
-        this.left = Math.random() * (LARGURA_CAMPO - 85); // 85 é a largura da plataforma
-        this.visual = document.createElement('div');
+        // **CORREÇÃO**: Limita o quão longe uma plataforma pode aparecer da outra
+        let ultimaPlataformaLeft = plataformas.length > 0 ? plataformas[plataformas.length - 1].left : LARGURA_CAMPO / 2 - 42;
+        let maxOffset = 150; // Máximo que pode variar para a esquerda ou direita
+        let randomOffset = (Math.random() - 0.5) * maxOffset * 2;
+        this.left = ultimaPlataformaLeft + randomOffset;
 
+        // Garante que a plataforma não saia da tela
+        if (this.left < 0) this.left = 10;
+        if (this.left > LARGURA_CAMPO - 85) this.left = LARGURA_CAMPO - 95;
+
+        this.visual = document.createElement('div');
         const visual = this.visual;
         visual.classList.add('plataforma');
         visual.style.left = this.left + 'px';
@@ -192,9 +183,36 @@ class Plataforma {
 }
 
 function criarPlataformas() {
-    for (let i = 0; i < QTD_PLATAFORMAS; i++) {
-        let gap = ALTURA_CAMPO / QTD_PLATAFORMAS;
-        let novaPlataformaBottom = 100 + i * gap;
+    // **CORREÇÃO**: Limpa plataformas antigas se houver (útil para reiniciar)
+    plataformas.forEach(p => campoJogo.removeChild(p.visual));
+    plataformas = [];
+
+    // **CORREÇÃO**: Cria uma plataforma inicial estável para o personagem não cair
+    const plataformaInicialBottom = 30;
+    const plataformaInicialLeft = LARGURA_CAMPO / 2 - 42; // Centralizada
+    
+    // Adiciona manualmente a primeira plataforma
+    let plataformaInicial = {
+        bottom: plataformaInicialBottom,
+        left: plataformaInicialLeft,
+        visual: document.createElement('div')
+    };
+    plataformaInicial.visual.classList.add('plataforma');
+    plataformaInicial.visual.style.left = plataformaInicial.left + 'px';
+    plataformaInicial.visual.style.bottom = plataformaInicial.bottom + 'px';
+    campoJogo.appendChild(plataformaInicial.visual);
+    plataformas.push(plataformaInicial);
+
+    // **CORREÇÃO**: Posiciona o personagem em cima da plataforma inicial
+    personagemBottom = plataformaInicialBottom + 20; // 20 é a altura da plataforma
+    personagemLeft = plataformaInicial.left;
+    personagem.style.bottom = personagemBottom + 'px';
+    personagem.style.left = personagemLeft + 'px';
+    
+    // Cria as outras plataformas iniciais de forma mais natural
+    for (let i = 1; i < QTD_PLATAFORMAS; i++) {
+        let ultimaPlataforma = plataformas[plataformas.length - 1];
+        let novaPlataformaBottom = ultimaPlataforma.bottom + (ALTURA_CAMPO / QTD_PLATAFORMAS);
         let novaPlataforma = new Plataforma(novaPlataformaBottom);
         plataformas.push(novaPlataforma);
     }
@@ -202,13 +220,12 @@ function criarPlataformas() {
 
 function verificarColisoes() {
     plataformas.forEach(plataforma => {
-        // Verifica se o personagem está caindo e colidindo com a parte de cima da plataforma
         if (
-            (personagemBottom >= plataforma.bottom) &&
-            (personagemBottom <= plataforma.bottom + 20) &&
-            ((personagemLeft + 60) >= plataforma.left) && // +60 é a largura do personagem
-            (personagemLeft <= (plataforma.left + 85)) && // +85 é a largura da plataforma
-            (velocidadeVertical < 0)
+            (velocidadeVertical < 0) && // Apenas checa colisão se estiver caindo
+            (personagemBottom > plataforma.bottom) &&
+            (personagemBottom < plataforma.bottom + 20) &&
+            ((personagemLeft + 60) > plataforma.left) &&
+            (personagemLeft < (plataforma.left + 85))
         ) {
             pular();
         }
