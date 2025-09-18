@@ -27,7 +27,7 @@ const FORCA_PULO = 18;
 const VELOCIDADE_MOVIMENTO = 5;
 
 // --- CONFIGURAÇÕES DO TEACHABLE MACHINE ---
-const URL = "COLE_AQUI_O_LINK_DO_SEU_MODELO/"; // <-- ATENÇÃO: COLOQUE SEU LINK AQUI!
+const URL = "https://teachablemachine.withgoogle.com/models/0N1eNo-gc/"; // <-- ATENÇÃO: COLOQUE SEU LINK AQUI!
 let model, webcam, maxPredictions;
 
 
