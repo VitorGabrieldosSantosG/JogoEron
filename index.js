@@ -23,8 +23,8 @@ let personagemBottom = 150;
 let velocidadeVertical = 0;
 let velocidadeHorizontal = 0;
 const GRAVIDADE = 0.9;
-const FORCA_PULO = 18;
-const VELOCIDADE_MOVIMENTO = 5;
+const FORCA_PULO = 15;
+const VELOCIDADE_MOVIMENTO = 2.5;
 
 // --- CONFIGURAÇÕES DO TEACHABLE MACHINE ---
 const URL = "https://teachablemachine.withgoogle.com/models/0N1eNo-gc/"; // Seu link do Teachable Machine
